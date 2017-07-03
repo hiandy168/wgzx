@@ -14,6 +14,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+
 from dingding import views as dingding_views
 
 urlpatterns = [
@@ -23,5 +24,6 @@ urlpatterns = [
     url(r'^page/(.+)/$',dingding_views.iframe,name='iframe'),
     url(r'^group/(.+)/$',dingding_views.group,name='group'),
     url(r'^member/(.+)/$',dingding_views.member,name='member'),
+    url(r'^data/$', dingding_views.member, name='data'),
     # url(r'^get/(?p<group>)',dingding_views.get,name='get'),
 ]

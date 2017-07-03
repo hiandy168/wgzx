@@ -1,6 +1,6 @@
-python manage.py shell
+shell
 from dingding.models import Member
 from dingding.models import Group
 
-Member.objects.get(name='潜国胜')
-Group.objects.get(name='测试组')
+a=Member.objects.get(name='潜国胜')
+a.group.all()[1].name

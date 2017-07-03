@@ -30,11 +30,15 @@
     	<td align="left">
         <button id="button_add" type="button" class="btn btn-default">
             <span class="glyphicon glyphicon-plus"></span>
-            添加
+            新建
+        </button>
+            <button id="button_del" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-minus"></span>
+                删除
         </button>
         </td>
         <td align="right">
-        <button id="button_sure" type="button" class="btn btn-default">
+            <button id="button_yes" type="button" class="btn btn-default">
             <span class="glyphicon glyphicon-ok"></span>
             确定
         </button>
@@ -43,22 +47,31 @@
 </table>
 
 <script>
-$(function(){ 
+    $(function () {
+        window.code = 1;
 	$.getJSON('/member/all', function (member_list) {
 		$.each(member_list, function(){
 			$("#member").append($("<option>").text(this));
 		});
 	});
+        $.getJSON('/group/all', function (group_list) {
+            $.each(group_list, function () {
+                $("#group").append($("<option>").text(this));
+            });
+        });
 });
 
 $("#member").change(function() {
-	$("#group").empty();
+    window.code = 0;
 	$("#choice").empty();
 	$.getJSON('/member/'+$("#member").find("option:selected").text(), function (information) {
-		$("#name").val(information.name)
-		$("#num").val(information.num)
-		$("#phone").val(information.phone)
-		$("#remark").val(information.remark)
+        $("#name").val(information.name);
+        $("#num").val(information.num);
+        $("#phone").val(information.phone);
+        $("#remark").val(information.remark);
+        $.each(information.group, function () {
+            $("#choice").append($("<option>").text(this));
+        });
 	})
 });
 
@@ -69,20 +82,35 @@ $("#choice").change(function() {
 	
 $("#group").change(function() {
 	$("#choice").append($("<option>").text($("#group").find("option:selected").text()));
-	$("#group").find("option:selected").remove();
 	});
 	
 $("#button_add").click(function(){
-	$("#name").val('')
-	$("#num").val('')
-	$("#phone").val('')
-	$("#remark").val('')
+    window.code = 1;
+    $("#name").val('');
+    $("#num").val('');
+    $("#phone").val('');
+    $("#remark").val('');
 	$("#choice").empty();
-	$.getJSON('/group/all', function (group_list) {
-		$.each(group_list, function(){
-			$("#group").append($("<option>").text(this));
-		});
-	});
+});
+    $("#button_del").click(function () {
+        window.location.reload();
+    });
+    $("#button_yes").click(function () {
+        $.ajax({
+            type: 'post',
+            data: {
+                code: code,
+                name: $("#name").val(),
+                num: $("#num").val(),
+                phone: $("#phone").val(),
+                remark: $("#remark").val(),
+            },
+            url: "/data/",
+            dataType: 'html',
+            async: false
+        });
+        {#	window.location.reload();#}
 })
+
 </script>
 {% endblock %}

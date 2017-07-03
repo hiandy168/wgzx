@@ -1,9 +1,11 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django import forms
-from django.contrib.auth.decorators import login_required
-from .models import Member,Group
 import json
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from .models import Member, Group
+
 
 @login_required
 def index(request):
@@ -29,5 +31,12 @@ def member(request,key):
         lists = [member.name for member in member_list]
     else:
         member = Member.objects.get(name=key)
-        lists = {'name':member.name,'remark':member.remark,'num':member.num,'phone':member.phone}
+        group = [i.name for i in member.group.all()]
+        print(group)
+        lists = {'name': member.name, 'remark': member.remark, 'num': member.num, 'phone': member.phone, 'group': group}
     return HttpResponse(json.dumps(lists),content_type='application/json')
+
+
+def data(request):
+    test = request.GET.get('num', '')
+    print(test)
