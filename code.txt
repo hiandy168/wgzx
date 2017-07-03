@@ -2,5 +2,5 @@ python manage.py shell
 from dingding.models import Member
 from dingding.models import Group
 
-Member.objects.get(name=)
+Member.objects.get(name='潜国胜')
 Group.objects.get(name=)
