@@ -3,7 +3,6 @@ from django.contrib import admin
 import datetime
 
 # Create your models here.
-# Create your models here.
 class Group(models.Model):
     class Meta:
         verbose_name = '分组'
