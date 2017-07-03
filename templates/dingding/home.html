@@ -1,0 +1,80 @@
+{% extends 'dingding/template.html' %}
+{% block content %}
+<table align="center">
+    <tr>
+        <td style="width: 300px;" rowspan="2" class="col-sm-3">
+        	<div class="panel panel-default">
+  				<div class="panel-heading">分组</div>
+                    <select id="group" size="32" class="selectpicker show-tick form-control">
+                    </select>
+			</div>
+        </td>
+        <td style="width: 400px;" rowspan="2" class="col-sm-3">
+			<div class="panel panel-default">
+  				<div class="panel-heading">成员</div>
+                    <select id="member" size="32" class="selectpicker show-tick form-control">
+                    </select>
+			</div>
+        </td>
+        <td style="width: 400px;" class="col-sm-3">
+			<div class="panel panel-default">
+  				<div class="panel-heading">已选</div>
+            		<select id="choice" size="19" multiple="multiple" class="selectpicker show-tick form-control">
+        			</select>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 400px;" class="col-sm-3">
+			<div class="panel panel-default">
+  				<div class="panel-heading" >发送内容</div>
+                <div align="right">
+            		<textarea id="text" style="border:0;height: 120px;width: 100%;resize: none;"></textarea>
+                	<button id="button_sure" type="button" class="btn btn-default">
+            			<span class="glyphicon glyphicon-phone"></span>
+                		发送
+            		</button>
+                </div>
+			</div>
+        </td>
+    </tr>
+</table>
+<script>
+$(function(){
+	$.getJSON('/member/all', function (member_list) {
+		$.each(member_list, function(){
+			$("#member").append($("<option>").text(this));
+		});
+	});
+	$.getJSON('/group/all', function (group_list) {
+		$.each(group_list, function(){
+			$("#group").append($("<option>").text(this));
+		});
+	});
+});
+
+$("#group").change(function() {
+	$("#member").empty();
+	$.getJSON('/group/'+$("#group").find("option:selected").text(), function (member_list) {
+			$("#member").append($("<option>").text($("#group").val()+'   |   全选'+member_list.length +'人'));
+		$.each(member_list, function(){
+			$("#member").append($("<option>").text(this));
+		});
+	});
+});
+
+$("#member").change(function() {
+	$("#choice").append($("<option>").text($("#member").find("option:selected").text()));
+});
+
+$("#choice").change(function() {
+	$("#choice").find("option:selected").remove();
+});
+
+$("#button_sure").click(function(){
+	if($("#text").val().indexOf("SW")+$("#text").val().indexOf("互联网电视")>0){
+		alert("请检测是否已选 技术支持 营销中心");
+	};
+});
+</script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'dingding/template.html' %}
+{% block content %}
+<table align="center">
+    <tr>
+        <td rowspan="2" style="width: 300px;" class="col-sm-3">
+            <select id="group" size="34" class="selectpicker show-tick form-control">
+                {% for group in group_list %}
+                <option value="{{group}}">{{group}}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td style="width: 400px;" class="col-sm-3">
+            <select id="member" size="16" class="selectpicker show-tick form-control">
+            </select>
+        </td>
+        <td style="width: 300px;" rowspan="2" class="col-sm-3">
+            <textarea id="text" style="height: 100%;width: 100%;"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 400px;" class="col-sm-3">
+            <select id="choice" size="17" multiple="multiple" class="selectpicker show-tick form-control">
+            </select>
+        </td>
+    </tr>
+</table>
+
+<script>
+$(document).ready(function(){
+    $.getJSON('/data', function (data) {
+        $("#group").change(function() {
+            var gruop = $("#group").val();
+            var member_list =data[gruop];
+            $("#member").empty();
+            $("#member").append($("<option>").attr('style', 'color:red').text('全选' + '	|	' + gruop));
+            $.each(member_list,function(n,member) {
+                $("#member").append($("<option>").val(member.name).text(member.name + '	|	' + member.team + '	|	' + member.describe));
+            });
+        });
+        $("#member").change(function() {
+            $("#choice").append($("<option>").val($("#member").val()).text($("#member").val()))
+        });
+        $("#choice").change(function() {$("#choice").find("option:selected").remove()});
+    });
+});
+</script>
+{% endblock %}

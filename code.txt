@@ -1,0 +1,6 @@
+python manage.py shell
+from dingding.models import Member
+from dingding.models import Group
+
+Member.objects.get(name=)
+Group.objects.get(name=)
