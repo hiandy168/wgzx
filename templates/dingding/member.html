@@ -1,9 +1,10 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-<table align="center">
+    <form id="Form" action="/get" method="get">
+        <table align=center>
     <tr>
-        <td rowspan="3" style="width: 400px;" class="col-sm-3">
-            <select id="member" size="34" class="selectpicker show-tick form-control">
+        <td rowspan="2" style="width: 400px;" class="col-sm-3">
+            <select id="member" size="33" class="selectpicker show-tick form-control">
 			</select>
         </td>
         <td colspan="2" style="width: 600px;" class="col-sm-3">
@@ -11,49 +12,56 @@
             <p><b>姓名：</b><input type="text" id="name"/></p>
             <p><b>工号：</b><input type="text" id="num"/></p>
             <p><b>电话：</b><input type="text" id="phone"/></p>
-            <p><b>备注：</b><input type="text" id="remark"/></p>    
+                <p><b>备注：</b><input type="text" id="remark"/></p>
             <p><b>分组：</b></p>
             </div>
         </td>
    </tr>
    <tr>
         <td style="width: 300px;" class="col-sm-3">
-            <select id="choice" size="20" class="selectpicker show-tick form-control">
+            <select id="choice" size="23" class="selectpicker show-tick form-control">
             </select>
         </td>
 		<td style="width: 300px;" class="col-sm-3">
-            <select id="group" size="20" class="selectpicker show-tick form-control">
+            <select id="group" size="23" class="selectpicker show-tick form-control">
 			</select>
         </td>
     </tr>
     <tr>
-    	<td align="left">
-        <button id="button_add" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus"></span>
-            新建
-        </button>
+        <td align="center">
+            <input id="search" style="width:88%;height:33px">
+            <button id="button_search" type="button" style="width:10.5%;height:33px" class="btn btn-default">
+                <span class="glyphicon glyphicon-search"></span>
+            </button>
+        </td>
+        <td align="left">
+            <button id="button_add" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span>
+                新建
+            </button>
             <button id="button_del" type="button" class="btn btn-default">
                 <span class="glyphicon glyphicon-minus"></span>
                 删除
-        </button>
+            </button>
         </td>
         <td align="right">
             <button id="button_yes" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-ok"></span>
-            确定
-        </button>
+                <span class="glyphicon glyphicon-ok"></span>
+                确定
+            </button>
         </td>
     </tr>
 </table>
 
 <script>
     $(function () {
-        window.code = 1;
-	$.getJSON('/member/all', function (member_list) {
-		$.each(member_list, function(){
-			$("#member").append($("<option>").text(this));
-		});
-	});
+        $.getJSON('/member/all', function (member_list) {
+            window.add = 1;
+            window.member_list = member_list;
+            $.each(member_list, function () {
+                $("#member").append($("<option>").text(this));
+            });
+        });
         $.getJSON('/group/all', function (group_list) {
             $.each(group_list, function () {
                 $("#group").append($("<option>").text(this));
@@ -62,7 +70,7 @@
 });
 
 $("#member").change(function() {
-    window.code = 0;
+    window.add = 0;
 	$("#choice").empty();
 	$.getJSON('/member/'+$("#member").find("option:selected").text(), function (information) {
         $("#name").val(information.name);
@@ -83,9 +91,19 @@ $("#choice").change(function() {
 $("#group").change(function() {
 	$("#choice").append($("<option>").text($("#group").find("option:selected").text()));
 	});
-	
+
+    $("#button_search").click(function () {
+        $("#member").empty();
+        $.each(member_list, function () {
+            $("#search").val();
+            if (this.indexOf($("#search").val()) >= 0) {
+                $("#member").append($("<option>").text(this));
+            }
+        })
+    });
+
 $("#button_add").click(function(){
-    window.code = 1;
+    window.add = 1;
     $("#name").val('');
     $("#num").val('');
     $("#phone").val('');
@@ -96,21 +114,9 @@ $("#button_add").click(function(){
         window.location.reload();
     });
     $("#button_yes").click(function () {
-        $.ajax({
-            type: 'post',
-            data: {
-                code: code,
-                name: $("#name").val(),
-                num: $("#num").val(),
-                phone: $("#phone").val(),
-                remark: $("#remark").val(),
-            },
-            url: "/data/",
-            dataType: 'html',
-            async: false
-        });
-        {#	window.location.reload();#}
-})
-
+        $.post('{% url "post" %}', {'add': add, 'name': 1}, function (ret) {
+            alert(ret);
+        })
+    })
 </script>
 {% endblock %}

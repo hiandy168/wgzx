@@ -32,11 +32,10 @@ def member(request,key):
     else:
         member = Member.objects.get(name=key)
         group = [i.name for i in member.group.all()]
-        print(group)
         lists = {'name': member.name, 'remark': member.remark, 'num': member.num, 'phone': member.phone, 'group': group}
     return HttpResponse(json.dumps(lists),content_type='application/json')
 
 
-def data(request):
-    test = request.GET.get('num', '')
-    print(test)
+def post(request):
+    print(request.post['name'])
+    return HttpResponse(request.post['name'])

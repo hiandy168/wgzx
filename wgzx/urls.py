@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^group/(.+)/$',dingding_views.group,name='group'),
     url(r'^member/(.+)/$',dingding_views.member,name='member'),
     url(r'^data/$', dingding_views.member, name='data'),
-    # url(r'^get/(?p<group>)',dingding_views.get,name='get'),
+    url(r'^post', dingding_views.post, name='post'),
 ]

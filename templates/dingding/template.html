@@ -1,10 +1,20 @@
 <!DOCTYPE HTML>
 <head>
     <title>钉钉短信平台</title>
-<!--    <script src="static/dingding.js"></script>-->
     <script charset="utf8" src="http://code.jquery.com/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://www.ziqiangxuetang.com/media/django/csrf.js"></script>
+    <script>
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        });
+    </script>
+    <style type="text/css">
+        td {
+            padding: 2px 15px
+        }
+    </style>
 </head>
 <body style="background:transparent;">
 {% block content %}
