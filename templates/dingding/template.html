@@ -9,11 +9,35 @@
         $.ajaxSetup({
             data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
         });
+
+        $(function(){
+            $.post('{% url "data" %}', {'type': "member",'data':"all"}, function (member_list) {
+                window.member_list=member_list
+                $.each(member_list, function () {
+                    $("#member").append($("<option>").text(this[0]).val(this[1]));
+                });
+            });
+            $.post('{% url "data" %}', {'type': "group",'data':"all"}, function (group_list) {
+                $.each(group_list, function () {
+                    $("#group").append($("<option>").text(this[0]).val(this[1]));
+                });
+            });
+        });
+
+        function search() {
+            $("#member").empty();
+            $.each(member_list, function () {
+                if (this[0].indexOf($("#search").val()) >= 0) {
+                    $("#member").append($("<option>").text(this[0]).val(this[1]));
+                }
+            })
+        };
     </script>
     <style type="text/css">
-        td {
-            padding: 2px 15px
-        }
+        td {padding: 2px 15px}
+        div{margin:2px 0px;
+            class:input-group;}
+        button{margin:2px 0px;}
     </style>
 </head>
 <body style="background:transparent;">

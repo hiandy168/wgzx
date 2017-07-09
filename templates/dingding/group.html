@@ -2,42 +2,62 @@
 {% block content %}
 <table align="center">
     <tr>
-        <td rowspan="2" style="width: 300px;" class="col-sm-3">
+        <td rowspan=2 style="width: 300px;">
+            <b>分组：</b>
             <select id="group" size="34" class="selectpicker show-tick form-control">
-                {% for group in group_list %}
-                <option value="{{group}}">{{group}}</option>
-                {% endfor %}
             </select>
         </td>
-        <td style="width: 600px;" class="col-sm-3">
-            <select id="member" size="16" class="selectpicker show-tick form-control">
-                {% for member in member_list %}
-                <option value="{{member}}">{{member}}</option>
-                {% endfor %}
+        <td style="width: 400px;">
+            <b id="choice_text">成员：</b>
+            <select id="choice" size="32" multiple="multiple" class="selectpicker show-tick form-control">
+            </select>
+        </td>
+        <td style="width: 400px;">
+            <b>全部人员：</b>
+            <select id="member" size="32" class="selectpicker show-tick form-control">
             </select>
         </td>
     </tr>
     <tr>
-        <td style="width: 400px;" class="col-sm-3">
-            <select id="choice" size="17" multiple="multiple" class="selectpicker show-tick form-control">
-            </select>
+        <td colspan=2 align="right">
+            <button id="button_yes" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-ok"></span>
+                确定
+            </button>
         </td>
     </tr>
 </table>
 
 <script>
-$(document).ready(function(){
-    $.getJSON('/data', function (data) {
-        $("#group").change(function() {
-            var gruop = $("#group").val();
-            var member_list =data[gruop];
-            $("#member").empty();
+$("#group").change(function() {
+	$("#choice").empty();
+	var group=$("#group").find("option:selected").text()
+    $("#choice_text").text(group+':');
+	$.post('{% url "data" %}', {'type': "group",'data':group}, function (response) {
+        $.each(response, function () {
+            $("#choice").append($("<option>").text(this[0]).val(this[1]));
         });
-        $("#member").change(function() {
-            $("#choice").append($("<option>").val($("#member").val()).text($("#member").val()))
-        });
-        $("#choice").change(function() {$("#choice").find("option:selected").remove()});
-    });
+	})
 });
+
+$("#choice").change(function() {
+	$("#choice").find("option:selected").remove();
+});
+
+$("#member").change(function() {
+	$("#choice").append($("<option>").text($("#member").find("option:selected").text()).val($("#member").find("option:selected").val()));
+});
+
+$("#button_yes").click(function () {
+    var member_list=''
+    $('#choice option').each(function () {
+        member_list=member_list+($(this).val())+';';
+    });
+    $.post('{% url "group" %}', {'group':$("#group").find("option:selected").val(),'member_list':member_list},function(response){
+        alert(response);
+        window.location.reload();
+    })
+})
+
 </script>
 {% endblock %}

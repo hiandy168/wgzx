@@ -1,6 +1,11 @@
-shell
 from dingding.models import Member
 from dingding.models import Group
 
-a=Member.objects.get(name='潜国胜')
-a.group.all()[1].name
+a=Member.objects.get(id='')
+a.group.all()[0].name
+a.grouo.clear(id)
+a.group.add(id)
+a.group.remobe(id)
+
+Group.objects.all()
+Group.objects.get(name='01杭州互动').id

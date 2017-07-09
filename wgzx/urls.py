@@ -22,8 +22,7 @@ urlpatterns = [
     url(r'^login/',admin.site.login),
     url(r'^$',dingding_views.index,name='index'),
     url(r'^page/(.+)/$',dingding_views.iframe,name='iframe'),
-    url(r'^group/(.+)/$',dingding_views.group,name='group'),
-    url(r'^member/(.+)/$',dingding_views.member,name='member'),
-    url(r'^data/$', dingding_views.member, name='data'),
-    url(r'^post', dingding_views.post, name='post'),
+    url(r'^data/$', dingding_views.data, name='data'),
+    url(r'^member/$', dingding_views.member, name='member'),
+    url(r'^group/$', dingding_views.group, name='group'),
 ]

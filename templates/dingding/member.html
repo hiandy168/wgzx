@@ -1,38 +1,47 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    <form id="Form" action="/get" method="get">
-        <table align=center>
+<table align=center>
     <tr>
-        <td rowspan="2" style="width: 400px;" class="col-sm-3">
-            <select id="member" size="33" class="selectpicker show-tick form-control">
-			</select>
+        <td rowspan=2 style="width: 400px;">
+            <b>人员选择：</b>
+            <select id="member" size="32" class="selectpicker show-tick form-control">
+            </select>
         </td>
-        <td colspan="2" style="width: 600px;" class="col-sm-3">
-        	<div>
-            <p><b>姓名：</b><input type="text" id="name"/></p>
-            <p><b>工号：</b><input type="text" id="num"/></p>
-            <p><b>电话：</b><input type="text" id="phone"/></p>
-                <p><b>备注：</b><input type="text" id="remark"/></p>
-            <p><b>分组：</b></p>
+        <td colspan="2" style="width: 600px;">
+            <div class="input-group">
+                <span class="input-group-addon "><span class="glyphicon glyphicon-user"></span></span>
+                <input id="name" class="form-control" placeholder="姓名">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon "><span class="glyphicon glyphicon-star"></span></span>
+                <input id="num" class="form-control" placeholder="工号">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon "><span class="glyphicon glyphicon-earphone"></span></span>
+                <input id="phone" class="form-control" placeholder="电话">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon "><span class="glyphicon glyphicon-tag"></span></span>
+                <input id="remark" class="form-control" placeholder="备注">
             </div>
         </td>
    </tr>
    <tr>
-        <td style="width: 300px;" class="col-sm-3">
+        <td style="width: 300px;">
+            <b id="choice_text">已选：</b>
             <select id="choice" size="23" class="selectpicker show-tick form-control">
             </select>
         </td>
-		<td style="width: 300px;" class="col-sm-3">
+        <td style="width: 300px;">
+            <b>全部分组：</b>
             <select id="group" size="23" class="selectpicker show-tick form-control">
-			</select>
+            </select>
         </td>
     </tr>
     <tr>
-        <td align="center">
-            <input id="search" style="width:88%;height:33px">
-            <button id="button_search" type="button" style="width:10.5%;height:33px" class="btn btn-default">
-                <span class="glyphicon glyphicon-search"></span>
-            </button>
+        <td class="input-group"  style="width:100%">
+            <span class="input-group-addon "><span class="glyphicon glyphicon-search"></span></span>
+            <input id="search" class="form-control" placeholder="请输入关键字">
         </td>
         <td align="left">
             <button id="button_add" type="button" class="btn btn-default">
@@ -54,69 +63,72 @@
 </table>
 
 <script>
-    $(function () {
-        $.getJSON('/member/all', function (member_list) {
-            window.add = 1;
-            window.member_list = member_list;
-            $.each(member_list, function () {
-                $("#member").append($("<option>").text(this));
-            });
-        });
-        $.getJSON('/group/all', function (group_list) {
-            $.each(group_list, function () {
-                $("#group").append($("<option>").text(this));
-            });
-        });
+$("#search").bind("input propertychange",function(){search()});
+
+$(function () {
+    window.code=1;
+    window.id=-1;
 });
 
 $("#member").change(function() {
-    window.add = 0;
+    window.code=0;
 	$("#choice").empty();
-	$.getJSON('/member/'+$("#member").find("option:selected").text(), function (information) {
-        $("#name").val(information.name);
-        $("#num").val(information.num);
-        $("#phone").val(information.phone);
-        $("#remark").val(information.remark);
-        $.each(information.group, function () {
-            $("#choice").append($("<option>").text(this));
+	var member=$("#member").find("option:selected").text()
+	$("#choice_text").text(member+':');
+	$.post('{% url "data" %}', {'type': "member",'data':member}, function (response) {
+        $("#name").val(response.name);
+        $("#num").val(response.num);
+        $("#phone").val(response.phone);
+        $("#remark").val(response.remark);
+        window.id=response.id
+        $.each(response.group, function () {
+            $("#choice").append($("<option>").text(this[0]).val(this[1]));
         });
 	})
 });
 
 $("#choice").change(function() {
-	$("#group").append($("<option>").text($("#choice").find("option:selected").text()));
 	$("#choice").find("option:selected").remove();
-	});
+});
 	
 $("#group").change(function() {
-	$("#choice").append($("<option>").text($("#group").find("option:selected").text()));
-	});
-
-    $("#button_search").click(function () {
-        $("#member").empty();
-        $.each(member_list, function () {
-            $("#search").val();
-            if (this.indexOf($("#search").val()) >= 0) {
-                $("#member").append($("<option>").text(this));
-            }
-        })
-    });
+	$("#choice").append($("<option>").text($("#group").find("option:selected").text()).val($("#group").find("option:selected").val()));
+});
 
 $("#button_add").click(function(){
-    window.add = 1;
+    window.code=1;
+    window.id=-1
     $("#name").val('');
     $("#num").val('');
     $("#phone").val('');
     $("#remark").val('');
 	$("#choice").empty();
 });
-    $("#button_del").click(function () {
+
+$("#button_del").click(function () {
+    $.post('{% url "member" %}', {'code':'-1','id':id,'name':$("#name").val()},function(response){
         window.location.reload();
-    });
-    $("#button_yes").click(function () {
-        $.post('{% url "post" %}', {'add': add, 'name': 1}, function (ret) {
-            alert(ret);
-        })
+        alert(response);
     })
+});
+
+$("#button_yes").click(function () {
+    var group=''
+    $('#choice option').each(function () {
+        group=group+($(this).val())+';';
+    });
+    data={'code':code,
+        'id':id,
+        'name':$("#name").val(),
+        'num':$("#num").val(),
+        'phone':$("#phone").val(),
+        'remark':$("#remark").val(),
+        'group':group,
+    }
+    $.post('{% url "member" %}', data,function(request){
+        alert(request);
+        window.location.reload();
+    })
+})
 </script>
 {% endblock %}

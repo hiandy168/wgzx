@@ -21,7 +21,6 @@ class Member(models.Model):
     group=models.ManyToManyField(Group,verbose_name='分组')
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('name','num','phone','remark')
-
 class Log(models.Model):
     class Meta:
         verbose_name = '日志'
@@ -29,7 +28,7 @@ class Log(models.Model):
         ordering = ['time']
     time=models.DateTimeField(default=datetime.datetime.now)
     content=models.CharField('内容',max_length=200)
-    successful=models.CharField('成功',max_length=200)
-    failure=models.CharField('失败',max_length=200)
+    success=models.CharField('成功',max_length=200)
+    fail=models.CharField('失败',max_length=200)
 class LogAdmin(admin.ModelAdmin):
     list_display = ('time','content')
