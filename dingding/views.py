@@ -1,14 +1,14 @@
 import json
-
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from .models import Member, Group
 
+
 @login_required
 def index(request):
-    return render(request, 'dingding/index.html')
+    return render(request, 'dingding/index.html', {'user': request.user})
 
 @login_required
 def iframe(request,key):
@@ -48,34 +48,31 @@ def member(request):
     phone=replace(phone)
     remark=replace(remark)
     group=replace(group)
-    if name =='' and code=='1':
-        return HttpResponse('请输入名字')
+    print([code, id, name, num, phone, remark, group])
+    if group == '':
+        group = []
     else:
-        print([code,id,name,num,phone,remark,group])
-        if group=='':
-            group=[]
-        else:
-            group=list(set(group.split(';')[:-1]))
-        if code =='-1':
-            Member.objects.get(id=id).delete()
-            return HttpResponse('%s 删除成功'%name)
-        elif code =='1':
-            try:
-                Member.objects.get(name=name)
-                return HttpResponse('添加失败， %s 已存在'%name)
-            except:
-                member = Member.objects.create()
-                member.name, member.num, member.phone, member.remark = name, num, phone, remark
-                for id in group:member.group.add(id)
-                member.save()
-                return HttpResponse('%s 添加成功'%name)
-        else:
-            member=Member.objects.get(id=id)
-            member.name,member.num,member.phone,member.remark=name,num,phone,remark
-            member.group.clear()
-            for id in group:member.group.add(id)
+        group = list(set(group.split(';')[:-1]))
+    if code == '-1':
+        Member.objects.get(id=id).delete()
+        return HttpResponse('Success: %s 已删除' % name)
+    elif code == '1':
+        try:
+            Member.objects.get(name=name)
+            return HttpResponse('Error: %s 已存在' % name)
+        except:
+            member = Member.objects.create()
+            member.name, member.num, member.phone, member.remark = name, num, phone, remark
+            for id in group: member.group.add(id)
             member.save()
-            return HttpResponse('%s 修改成功'%name)
+            return HttpResponse('Success: %s 已添加' % name)
+    else:
+        member = Member.objects.get(id=id)
+        member.name, member.num, member.phone, member.remark = name, num, phone, remark
+        member.group.clear()
+        for id in group: member.group.add(id)
+        member.save()
+        return HttpResponse('Success: %s 已修改' % name)
 
 def group(request):
     group,member_list2=request.POST.get('group'),request.POST.get('member_list')
@@ -96,4 +93,4 @@ def group(request):
         member=Member.objects.get(id=id)
         member.group.add(group)
         member.save()
-    return HttpResponse('%s 组修改成功' % Group.objects.get(id=group).name)
+    return HttpResponse('Success: %s 组已修改' % Group.objects.get(id=group).name)

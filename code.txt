@@ -9,3 +9,6 @@ a.group.remobe(id)
 
 Group.objects.all()
 Group.objects.get(name='01杭州互动').id
+
+
+python3 manage.py collectstatic

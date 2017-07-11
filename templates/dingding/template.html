@@ -9,10 +9,10 @@
         $.ajaxSetup({
             data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
         });
-
-        $(function(){
+        function start() {
+            $("select").empty();
             $.post('{% url "data" %}', {'type': "member",'data':"all"}, function (member_list) {
-                window.member_list=member_list
+                window.member_list = member_list;
                 $.each(member_list, function () {
                     $("#member").append($("<option>").text(this[0]).val(this[1]));
                 });
@@ -22,7 +22,7 @@
                     $("#group").append($("<option>").text(this[0]).val(this[1]));
                 });
             });
-        });
+        }
 
         function search() {
             $("#member").empty();
@@ -31,7 +31,7 @@
                     $("#member").append($("<option>").text(this[0]).val(this[1]));
                 }
             })
-        };
+        }
     </script>
     <style type="text/css">
         td {padding: 2px 15px}
@@ -40,8 +40,6 @@
         button{margin:2px 0px;}
     </style>
 </head>
-<body style="background:transparent;">
 {% block content %}
 {% endblock%}
-</body>
 </html>

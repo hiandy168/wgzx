@@ -1,5 +1,6 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
+    <body onload="start()" style="background:transparent;">
 <table align="center">
     <tr>
         <td style="width: 300px;" rowspan=2>
@@ -32,14 +33,15 @@
         </td>
     </tr>
 </table>
+    </body>
 <script>
 $("#group").change(function() {
 	$("#member").empty();
 	$("#search").val('');
-	var group=$("#group").find("option:selected").text()
+    var group = $("#group").find("option:selected").text();
     $("#choice_text").text(group+':');
 	$.post('{% url "data" %}', {'type': "group",'data':group}, function (response) {
-        window.member_list=response
+        window.member_list = response;
 	    $("#member").append($("<option>").text('全选：'+group+'（'+response.length +'人）'));
         $.each(response, function(){
             $("#member").append($("<option>").text(this[0]).val(this[1]));

@@ -17,6 +17,7 @@ from django.contrib import admin
 
 from dingding import views as dingding_views
 
+# import settings
 urlpatterns = [
     url(r'^admin/',admin.site.urls),
     url(r'^login/',admin.site.login),
@@ -26,3 +27,11 @@ urlpatterns = [
     url(r'^member/$', dingding_views.member, name='member'),
     url(r'^group/$', dingding_views.group, name='group'),
 ]
+
+# DEBUG = False
+from django.conf.urls import patterns, include, url
+from django.conf.urls import static
+from django.conf import settings
+
+urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
+                                {'document_root': settings.STATIC_ROOT}), )

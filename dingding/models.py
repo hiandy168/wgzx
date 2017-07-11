@@ -1,6 +1,8 @@
-from django.db import models
-from django.contrib import admin
 import datetime
+
+from django.contrib import admin
+from django.db import models
+
 
 # Create your models here.
 class Group(models.Model):
@@ -9,6 +11,11 @@ class Group(models.Model):
         verbose_name_plural = '分组管理'
         ordering = ['name']
     name=models.CharField('分组',max_length=100)
+
+
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'name')
+
 class Member(models.Model):
     class Meta:
         verbose_name = '人员'
@@ -21,6 +28,8 @@ class Member(models.Model):
     group=models.ManyToManyField(Group,verbose_name='分组')
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('name','num','phone','remark')
+
+
 class Log(models.Model):
     class Meta:
         verbose_name = '日志'

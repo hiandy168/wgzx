@@ -1,5 +1,6 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
+    <body onload="start()" style="background:transparent;">
 <table align=center>
     <tr>
         <td rowspan=2 style="width: 400px;">
@@ -61,11 +62,12 @@
         </td>
     </tr>
 </table>
-
+    </body>
 <script>
 $("#search").bind("input propertychange",function(){search()});
 
 $(function () {
+    start();
     window.code=1;
     window.id=-1;
 });
@@ -73,14 +75,14 @@ $(function () {
 $("#member").change(function() {
     window.code=0;
 	$("#choice").empty();
-	var member=$("#member").find("option:selected").text()
+    var member = $("#member").find("option:selected").text();
 	$("#choice_text").text(member+':');
 	$.post('{% url "data" %}', {'type': "member",'data':member}, function (response) {
         $("#name").val(response.name);
         $("#num").val(response.num);
         $("#phone").val(response.phone);
         $("#remark").val(response.remark);
-        window.id=response.id
+        window.id = response.id;
         $.each(response.group, function () {
             $("#choice").append($("<option>").text(this[0]).val(this[1]));
         });
@@ -97,38 +99,50 @@ $("#group").change(function() {
 
 $("#button_add").click(function(){
     window.code=1;
-    window.id=-1
-    $("#name").val('');
-    $("#num").val('');
-    $("#phone").val('');
-    $("#remark").val('');
+    window.id = -1;
+    $("input").val('');
 	$("#choice").empty();
 });
 
 $("#button_del").click(function () {
-    $.post('{% url "member" %}', {'code':'-1','id':id,'name':$("#name").val()},function(response){
-        window.location.reload();
-        alert(response);
-    })
+    if (id > 0) {
+        $.post('{% url "member" %}', {'code': '-1', 'id': id, 'name': $("#name").val()}, function (response) {
+            alert(response);
+            $("input").val('');
+            $("#choice").empty();
+            start()
+        })
+    }
+    else {
+        alert('请选择人员')
+    }
 });
 
 $("#button_yes").click(function () {
-    var group=''
-    $('#choice option').each(function () {
-        group=group+($(this).val())+';';
-    });
-    data={'code':code,
-        'id':id,
-        'name':$("#name").val(),
-        'num':$("#num").val(),
-        'phone':$("#phone").val(),
-        'remark':$("#remark").val(),
-        'group':group,
+    if ($("#name").val() == '') {
+        alert('Error:请输入名字')
     }
-    $.post('{% url "member" %}', data,function(request){
-        alert(request);
-        window.location.reload();
-    })
+    else {
+        var group = '';
+        $('#choice option').each(function () {
+            group = group + ($(this).val()) + ';';
+        });
+        data = {
+            'code': code,
+            'id': id,
+            'name': $("#name").val(),
+            'num': $("#num").val(),
+            'phone': $("#phone").val(),
+            'remark': $("#remark").val(),
+            'group': group,
+        };
+        $.post('{% url "member" %}', data, function (request) {
+            alert(request);
+            $("input").val('');
+            $("#choice").empty();
+            start()
+        })
+    }
 })
 </script>
 {% endblock %}

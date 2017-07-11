@@ -1,5 +1,6 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
+    <body onload="start()" style="background:transparent;">
 <table align="center">
     <tr>
         <td rowspan=2 style="width: 300px;">
@@ -28,10 +29,11 @@
     </tr>
 </table>
 
+    </body>
 <script>
 $("#group").change(function() {
 	$("#choice").empty();
-	var group=$("#group").find("option:selected").text()
+    var group = $("#group").find("option:selected").text();
     $("#choice_text").text(group+':');
 	$.post('{% url "data" %}', {'type': "group",'data':group}, function (response) {
         $.each(response, function () {
@@ -49,13 +51,13 @@ $("#member").change(function() {
 });
 
 $("#button_yes").click(function () {
-    var member_list=''
+    var member_list = '';
     $('#choice option').each(function () {
         member_list=member_list+($(this).val())+';';
     });
     $.post('{% url "group" %}', {'group':$("#group").find("option:selected").val(),'member_list':member_list},function(response){
         alert(response);
-        window.location.reload();
+        start()
     })
 })
 
