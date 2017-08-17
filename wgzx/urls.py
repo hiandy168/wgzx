@@ -26,11 +26,12 @@ urlpatterns = [
     url(r'^data/$', dingding_views.data, name='data'),
     url(r'^member/$', dingding_views.member, name='member'),
     url(r'^group/$', dingding_views.group, name='group'),
+    url(r'^log/$', dingding_views.log, name='log'),
+    url(r'^send/$', dingding_views.send, name='send'),
 ]
 
 # DEBUG = False
-from django.conf.urls import patterns, include, url
-from django.conf.urls import static
+from django.conf.urls import patterns, url
 from django.conf import settings
 
 urlpatterns += patterns('', url(r'^static/(?P<path>.*)$', 'django.views.static.serve',

@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib import admin
 from django.db import models
 
@@ -35,9 +33,11 @@ class Log(models.Model):
         verbose_name = '日志'
         verbose_name_plural = '日志记录'
         ordering = ['time']
-    time=models.DateTimeField(default=datetime.datetime.now)
-    content=models.CharField('内容',max_length=200)
-    success=models.CharField('成功',max_length=200)
+
+    time = models.CharField('时间', max_length=200)
+    num = models.CharField('总数', max_length=200)
     fail=models.CharField('失败',max_length=200)
+    content = models.CharField('内容', max_length=200)
+    author = models.CharField('操作', max_length=200)
 class LogAdmin(admin.ModelAdmin):
-    list_display = ('time','content')
+    list_display = ('time', 'content', 'author')

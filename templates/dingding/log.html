@@ -4,37 +4,22 @@
     <table class="table">
         <thead>
         <tr>
-            <th>时间</th>
-            <th>成功</th>
-            <th>失败</th>
+            <th width="7%">时间</th>
+            <th width="5%">总人数</th>
+            <th width="20%">失败</th>
+            <th width="5%">发送人</th>
             <th>内容</th>
-            <th>操作人</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-            <td>@mdo</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-            <td>@mdo</td>
-        </tr>
         </tbody>
     </table>
     </body>
 <script>
+    $.post('{% url "log" %}', {}, function (request) {
+        $.each(request, function () {
+            $("tbody").append($('<tr><td>' + this.time + '</td><td>' + this.num + '</td><td>' + this.fail + '</td><td>' + this.author + '</td><td>' + this.content + '</td></tr>'));
+        });
+    })
 </script>
 {% endblock %}

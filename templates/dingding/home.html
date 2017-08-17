@@ -5,11 +5,11 @@
     <tr>
         <td style="width: 300px;" rowspan=2>
         	<b>分组选择：</b>
-            <select id="group" size="34" class="selectpicker show-tick form-control"></select>
+            <select id="group" size="33" class="selectpicker show-tick form-control"></select>
         </td>
         <td style="width: 400px;" rowspan=2>
 			<b id="choice_text">全部：</b>
-            <select id="member" size="32" class="selectpicker show-tick form-control"></select>
+            <select id="member" size="31" class="selectpicker show-tick form-control"></select>
             <div class="input-group"  style="width:100%">
                 <span class="input-group-addon "><span class="glyphicon glyphicon-search"></span></span>
                 <input id="search" class="form-control" placeholder="请输入关键字">
@@ -17,14 +17,14 @@
         </td>
         <td style="width: 400px;">
 			<b>已选：</b>
-            <select id="choice" size="24" multiple="multiple" class="selectpicker show-tick form-control"></select>
+            <select id="choice" size="23" multiple="multiple" class="selectpicker show-tick form-control"></select>
         </td>
     </tr>
     <tr>
         <td style="width: 400px;">
             <b>发送内容：</b>
-            <textarea id="text" class="form-control" style="height: 120px;width: 100%"></textarea>
-            <button id="button_sure" type="button" style="float:right" class="btn btn-default">
+            <textarea id="content" class="form-control" style="height: 120px;width: 100%"></textarea>
+            <button id="button_send" type="button" style="float:right" class="btn btn-default">
                 <span class="glyphicon glyphicon-phone"></span>发送
             </button>
         </td>
@@ -39,7 +39,7 @@ $("#group").change(function() {
     $("#choice_text").text(group+':');
 	$.post('{% url "data" %}', {'type': "group",'data':group}, function (response) {
         window.member_list = response;
-	    $("#member").append($("<option>").text('全选：'+group+'（'+response.length +'人）'));
+        $("#member").append($('<option value=g' + $("#group").val() + '>全选：' + group + '（' + response.length + '人）</option>'));
         $.each(response, function(){
             $("#member").append($("<option>").text(this[0]).val(this[1]));
         });
@@ -48,15 +48,22 @@ $("#group").change(function() {
 $("#search").bind("input propertychange",function(){search()});
 
 $("#member").change(function() {
-	$("#choice").append($("<option>").text($("#member").find("option:selected").text()).val($("#member").find("option:selected").val()));
+    $("#choice").append($("<option>").text($("#member").find("option:selected").text()).val($("#member").val()));
 });
 
 $("#choice").change(function() {
 	$("#choice").find("option:selected").remove();
 });
 
-$("#button_sure").click(function(){
-
+$("#button_send").click(function () {
+    data = {'content': $('#content').val(), 'touser': '', 'author': '{{ user }}'};
+    $("#choice").children().each(function () {
+        data.touser += $(this).val() + '|'
+    });
+    $.post('{% url "send" %}', data, function (response) {
+        alert(response);
+        start()
+    })
 });
 </script>
 {% endblock %}
