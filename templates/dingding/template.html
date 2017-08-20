@@ -15,21 +15,43 @@
             $.post('{% url "data" %}', {'type': "member",'data':"all"}, function (member_list) {
                 window.member_list = member_list;
                 $.each(member_list, function () {
-                    $("#member").append($("<option>").text(this[0]).val(this[1]));
+                    $("#member").append($("<option>").text(this.name).val(this.id));
                 });
             });
             $.post('{% url "data" %}', {'type': "group",'data':"all"}, function (group_list) {
                 $.each(group_list, function () {
-                    $("#group").append($("<option>").text(this[0]).val(this[1]));
+                    $("#group").append($("<option>").text(this.name).val(this.id));
                 });
             });
+        }
+
+        function choice_add(name, group) {
+            var group = arguments[1] ? arguments[1] : 0;
+            var choice = $(name + " option:selected").clone();
+            if (group == 1) {
+                choice.val('g' + choice.val())
+            }
+            var list = [];
+            var type = 0;
+            $.each($("#choice option"), function () {
+                list.push($(this).val())
+            });
+            $.each(list, function () {
+                if (this == choice.val()) {
+                    type = 1;
+                    return false
+                }
+            });
+            if (type == 0) {
+                choice.prependTo("#choice")
+            }
         }
 
         function search() {
             $("#member").empty();
             $.each(member_list, function () {
-                if (this[0].indexOf($("#search").val()) >= 0) {
-                    $("#member").append($("<option>").text(this[0]).val(this[1]));
+                if (this.name.indexOf($("#search").val()) >= 0) {
+                    $("#member").append($("<option>").text(this.name).val(this.id));
                 }
             })
         }

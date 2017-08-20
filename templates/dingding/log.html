@@ -5,7 +5,7 @@
         <thead>
         <tr>
             <th width="7%">时间</th>
-            <th width="5%">总人数</th>
+            <th>操作</th>
             <th width="20%">失败</th>
             <th width="5%">发送人</th>
             <th>内容</th>
@@ -18,8 +18,20 @@
 <script>
     $.post('{% url "log" %}', {}, function (request) {
         $.each(request, function () {
-            $("tbody").append($('<tr><td>' + this.time + '</td><td>' + this.num + '</td><td>' + this.fail + '</td><td>' + this.author + '</td><td>' + this.content + '</td></tr>'));
+            var td_time = $('<td>').text(this.time);
+            var td_member = $('<td>').append($('<button>').text('复制收件人').attr({
+                'type': 'button',
+                'class': 'btn btn-default',
+                'onclick': 'history(' + this.member.id + ')'
+            }));
+            var td_fail = $('<td>').text(this.fail);
+            var td_author = $('<td>').text(this.author);
+            var td_content = $('<td>').text(this.content);
+            $('tbody').append($('<tr>').append(td_time).append(td_member).append(td_fail).append(td_author).append(td_content))
         });
-    })
+    });
+    function history(id) {
+        window.location.href = "/page/home/?history=" + id
+    }
 </script>
 {% endblock %}

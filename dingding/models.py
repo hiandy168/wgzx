@@ -35,7 +35,7 @@ class Log(models.Model):
         ordering = ['time']
 
     time = models.CharField('时间', max_length=200)
-    num = models.CharField('总数', max_length=200)
+    member = models.CharField('总数', max_length=200)
     fail=models.CharField('失败',max_length=200)
     content = models.CharField('内容', max_length=200)
     author = models.CharField('操作', max_length=200)

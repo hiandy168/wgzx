@@ -1,14 +1,17 @@
-from dingding.models import Member
-from dingding.models import Group
+﻿from dingding.models import Member,Group,Log
 
 a=Member.objects.get(id='')
 a.group.all()[0].name
 a.grouo.clear(id)
 a.group.add(id)
-a.group.remobe(id)
+a.group.remove(id)
 
 Group.objects.all()
 Group.objects.get(name='01杭州互动').id
 
+for i in Member.objects.all():
+	i.group.remove(Group.objects.get(name='00默认').id)
+	i.save()
 
-python3 manage.py collectstatic
+makemigrations
+migrate

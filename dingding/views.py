@@ -23,72 +23,65 @@ def iframe(request, page):
 @login_required
 def data(request):
     if request.POST.get('type') == 'member':
-        if request.POST.get('data')=='all':
+        if request.POST.get('data') == 'all':
             member_list = Member.objects.all()
-            lists = sorted([[member.name,member.id] for member in member_list])
+            lists = [{'id': member.id, 'name': member.name} for member in member_list]
         else:
-            member = Member.objects.get(name=request.POST.get('data'))
-            group = [[i.name,i.id] for i in member.group.all()]
-            lists = {'id':member.id,'name': member.name, 'remark': member.remark, 'num': member.num, 'phone': member.phone, 'group': group}
-    else:
-        if request.POST.get('data')=='all':
+            member = Member.objects.get(id=request.POST.get('data'))
+            group = [{'name': group.name, 'id': group.id} for group in member.group.all()]
+            lists = {'id': member.id, 'name': member.name, 'remark': member.remark, 'num': member.num,
+                     'phone': member.phone, 'group': group}
+    elif request.POST.get('type') == 'group':
+        if request.POST.get('data') == 'all':
             group_list = Group.objects.all()
-            lists = sorted([[group.name,group.id] for group in group_list][1:])
+            lists = [{'id': group.id, 'name': group.name} for group in group_list]
         else:
-            member_list = Member.objects.filter(group=Group.objects.get(name=request.POST.get('data')))
-            lists = sorted([[member.name,member.id] for member in member_list])
-    return HttpResponse(json.dumps(lists),content_type='application/json')
-
+            member_list = Member.objects.filter(group=Group.objects.get(id=request.POST.get('data')))
+            lists = [{'id': member.id, 'name': member.name} for member in member_list]
+    elif request.POST.get('type') == 'history':
+        log = Log.objects.get(id=request.POST.get('data'))
+        lists = eval(log.member)
+    if isinstance(lists, list):
+        lists = sorted(lists, key=lambda x: x['name'])
+    return HttpResponse(json.dumps(lists), content_type='application/json')
 def replace(input):
     if input==None:
         input=''
     return input
 
 def member(request):
-    code,id,name,num,phone,remark,group=request.POST.get('code'),request.POST.get('id'),request.POST.get('name'),request.POST.get('num'),request.POST.get('phone'),request.POST.get('remark'),request.POST.get('group')
-    id=replace(id)
-    name=replace(name)
-    num=replace(num)
-    phone=replace(phone)
-    remark=replace(remark)
-    group=replace(group)
-    print([code, id, name, num, phone, remark, group])
-    if group == '':
-        group = []
+    add = request.POST.get('add')
+    if add == '-1':
+        Member.objects.get(id=request.POST.get('id')).delete()
+        return HttpResponse('Success:已删除')
     else:
-        group = list(set(group.split(';')[:-1]))
-    if code == '-1':
-        Member.objects.get(id=id).delete()
-        return HttpResponse('Success: %s 已删除' % name)
-    elif code == '1':
-        try:
-            Member.objects.get(name=name)
-            return HttpResponse('Error: %s 已存在' % name)
-        except:
+        name = replace(request.POST.get('name'))
+        num = replace(request.POST.get('num'))
+        phone = replace(request.POST.get('phone'))
+        remark = replace(request.POST.get('remark'))
+        group = eval(request.POST.get('group'))
+        if add == '1':
             member = Member.objects.create()
             member.name, member.num, member.phone, member.remark = name, num, phone, remark
             for id in group: member.group.add(id)
             member.save()
             return HttpResponse('Success: %s 已添加' % name)
-    else:
-        member = Member.objects.get(id=id)
-        member.name, member.num, member.phone, member.remark = name, num, phone, remark
-        member.group.clear()
-        for id in group: member.group.add(id)
-        member.save()
-        return HttpResponse('Success: %s 已修改' % name)
+        else:
+            member = Member.objects.get(id=request.POST.get('id'))
+            member.name, member.num, member.phone, member.remark = name, num, phone, remark
+            member.group.clear()
+            for id in group: member.group.add(id)
+            member.save()
+            return HttpResponse('Success: %s 已修改' % name)
 
 def group(request):
-    group,member_list2=request.POST.get('group'),request.POST.get('member_list')
-    member_list1 = Member.objects.filter(group=Group.objects.get(id=group))
-    member_list1 = [member.id for member in member_list1]
-    if member_list2 == '':
-        member_list2 = []
-    else:
-        member_list2 = list(set(member_list2.split(';')[:-1]))
-    minus = [id for id in member_list1 if id not in member_list2]
-    add = [id for id in member_list2 if id not in member_list1]
-    print(group,minus,add)
+    group, member_list_new = request.POST.get('group'), eval(request.POST.get('member_list'))
+    member_list_old = [str(member.id) for member in Member.objects.filter(group=Group.objects.get(id=group))]
+    minus = [id for id in member_list_old if id not in member_list_new]
+    add = [id for id in member_list_new if id not in member_list_old]
+    print('组： ' + group)
+    print('增： ', minus)
+    print('删： ', add)
     for id in minus:
         member=Member.objects.get(id=id)
         member.group.remove(group)
@@ -101,33 +94,30 @@ def group(request):
 
 
 def log(request):
-    lists = Log.objects.all()
-    info = [{'time': i.time, 'num': i.num, 'fail': i.fail, 'content': i.content, 'author': i.author} for i in lists]
-    return HttpResponse(json.dumps(info), content_type='application/json')
-
+    logs = Log.objects.all()
+    lists = [{'time': log.time, 'member': {'id': log.id, 'num': len(eval(log.member))}, 'fail': log.fail,
+              'content': log.content, 'author': log.author} for log in logs[::-1]]
+    return HttpResponse(json.dumps(lists), content_type='application/json')
 
 def send(request):
     touser = []
-    for i in request.POST.get('touser').split('|')[:-1]:
-        if i[0] == 'g':
-            for member in Member.objects.filter(group=Group.objects.get(id=i[1:])):
-                touser.append(str(member.num))
+    member_list = json.loads(request.POST.get('touser'))
+    for member in member_list:
+        if member['id'][0] == 'g':
+            for member in Member.objects.filter(group=Group.objects.get(id=member['id'][1:])):
+                if member.num != '': touser.append((member.num))
         else:
-            try:
-                touser.append(str(Member.objects.get(id=i).num))
-            except:
-                pass
-    touser_num = len(set(touser))
+            num = Member.objects.get(id=member['id']).num
+            if num != '': touser.append(num)
     touser = '|'.join(set(touser))
     content = request.POST.get('content')
     author = request.POST.get('author')
-    print(touser_num, touser, content, author)
-    time, err = api(touser, content)
-    if err == '':
-        err = '无'
+    time, fail = api(touser, content)
+    if fail == '':
+        fail = '无'
     else:
-        err = '|'.join([Member.objects.get(num=i).name for i in err.split('|')])
+        fail = ' | '.join([Member.objects.get(num=i).name for i in fail.split('|')])
     log = Log.objects.create()
-    log.time, log.num, log.fail, log.content, log.author = time, touser_num, err, content, author
+    log.time, log.member, log.fail, log.content, log.author = time, member_list, fail, content, author
     log.save()
     return HttpResponse('Success:发送成功')

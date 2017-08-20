@@ -5,11 +5,11 @@
     <tr>
         <td style="width: 300px;" rowspan=2>
         	<b>分组选择：</b>
-            <select id="group" size="33" class="selectpicker show-tick form-control"></select>
+            <select id="group" size="30" class="selectpicker show-tick form-control"></select>
         </td>
         <td style="width: 400px;" rowspan=2>
 			<b id="choice_text">全部：</b>
-            <select id="member" size="31" class="selectpicker show-tick form-control"></select>
+            <select id="member" size="28" class="selectpicker show-tick form-control"></select>
             <div class="input-group"  style="width:100%">
                 <span class="input-group-addon "><span class="glyphicon glyphicon-search"></span></span>
                 <input id="search" class="form-control" placeholder="请输入关键字">
@@ -17,7 +17,7 @@
         </td>
         <td style="width: 400px;">
 			<b>已选：</b>
-            <select id="choice" size="23" multiple="multiple" class="selectpicker show-tick form-control"></select>
+            <select id="choice" size="20" multiple="multiple" class="selectpicker show-tick form-control"></select>
         </td>
     </tr>
     <tr>
@@ -32,38 +32,51 @@
 </table>
     </body>
 <script>
-$("#group").change(function() {
-	$("#member").empty();
-	$("#search").val('');
-    var group = $("#group").find("option:selected").text();
-    $("#choice_text").text(group+':');
+    var id = window.location.search.substr(9);
+    if (id != '') {
+        $.post('{% url "data" %}', {'type': "history", 'data': id}, function (member_list) {
+            $.each(member_list, function () {
+                $("#choice").append($("<option>").text(this.name).val(this.id));
+            });
+        });
+    }
+
+    $("#group").click(function () {
+        var group = $("#group option:selected").val();
 	$.post('{% url "data" %}', {'type': "group",'data':group}, function (response) {
         window.member_list = response;
-        $("#member").append($('<option value=g' + $("#group").val() + '>全选：' + group + '（' + response.length + '人）</option>'));
+        $("#member").empty();
+        $("#search").val('');
         $.each(response, function(){
-            $("#member").append($("<option>").text(this[0]).val(this[1]));
-        });
-	});
-});
+            $("#member").append($("<option>").text(this.name).val(this.id))
+        })
+    })
+    });
+    $("#group").dblclick(function () {
+        choice_add("#group", 1)
+    });
+
 $("#search").bind("input propertychange",function(){search()});
 
 $("#member").change(function() {
-    $("#choice").append($("<option>").text($("#member").find("option:selected").text()).val($("#member").val()));
+    choice_add("#member")
 });
 
-$("#choice").change(function() {
-	$("#choice").find("option:selected").remove();
+    $("#choice").click(function () {
+        $("#choice option:selected").remove();
 });
 
 $("#button_send").click(function () {
-    data = {'content': $('#content').val(), 'touser': '', 'author': '{{ user }}'};
-    $("#choice").children().each(function () {
-        data.touser += $(this).val() + '|'
-    });
-    $.post('{% url "send" %}', data, function (response) {
-        alert(response);
-        start()
-    })
+    if (confirm('吾日三省吾身：\n        技术支持选否？\n        全国营销选否？\n        相关领导选否？\n                确定发送？')) {
+        data = {'content': $('#content').val(), 'touser': [], 'author': '{{ user }}'};
+        $.each($("#choice option"), function () {
+            data.touser.push({'id': $(this).val(), 'name': $(this).text()})
+        });
+        data.touser = JSON.stringify(data.touser);
+        $.post('{% url "send" %}', data, function (response) {
+            start()
+        })
+    }
 });
 </script>
 {% endblock %}
