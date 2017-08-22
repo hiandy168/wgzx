@@ -6,56 +6,6 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/bootstrap.js"></script>
     <script src="/static/js/ajax&date.js"></script>
-    <script>
-        $.ajaxSetup({
-            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
-        });
-        function start() {
-            $("select").empty();
-            $.post('{% url "data" %}', {'type': "member",'data':"all"}, function (member_list) {
-                window.member_list = member_list;
-                $.each(member_list, function () {
-                    $("#member").append($("<option>").text(this.name).val(this.id));
-                });
-            });
-            $.post('{% url "data" %}', {'type': "group",'data':"all"}, function (group_list) {
-                $.each(group_list, function () {
-                    $("#group").append($("<option>").text(this.name).val(this.id));
-                });
-            });
-        }
-
-        function choice_add(name, group) {
-            var group = arguments[1] ? arguments[1] : 0;
-            var choice = $(name + " option:selected").clone();
-            if (group == 1) {
-                choice.val('g' + choice.val())
-            }
-            var list = [];
-            var type = 0;
-            $.each($("#choice option"), function () {
-                list.push($(this).val())
-            });
-            $.each(list, function () {
-                if (this == choice.val()) {
-                    type = 1;
-                    return false
-                }
-            });
-            if (type == 0) {
-                choice.prependTo("#choice")
-            }
-        }
-
-        function search() {
-            $("#member").empty();
-            $.each(member_list, function () {
-                if (this.name.indexOf($("#search").val()) >= 0) {
-                    $("#member").append($("<option>").text(this.name).val(this.id));
-                }
-            })
-        }
-    </script>
     <style type="text/css">
         table {
             align: center
@@ -70,9 +20,80 @@
             margin: 2px 0px;
             class: input-group;
         }
-        button{margin:2px 0px;}
+
+        button {
+            margin: 2px 0px;
+        }
     </style>
+    <script>
+        $.ajaxSetup({data: {csrfmiddlewaretoken: '{{ csrf_token }}'},});
+    </script>
 </head>
 {% block content %}
-{% endblock%}
-</html>
+{% endblock %}
+function start() {
+$("input").val('');
+$("#choice").empty();
+$("select").empty();
+$.post('{% url "data" %}', {'type': "member",'data':"all"}, function (member_list) {
+window.member_list = member_list;
+$.each(member_list, function () {
+$("#member").append($("
+<option>").text(this.name).val(this.id));
+    });
+    });
+    $.post('{% url "data" %}', {'type': "group",'data':"all"}, function (group_list) {
+    $.each(group_list, function () {
+    $("#group").append($("
+<option>").text(this.name).val(this.id));
+    });
+    });
+    }
+
+    function choice_add(name, group) {
+    var group = arguments[1] ? arguments[1] : 0;
+    var choice = $(name + " option:selected").clone();
+    var list = [];
+    $.each($("#choice option"), function () {list.push($(this).val())});
+    if (group == 1) {choice.val('g' + choice.val())}
+    $.each($(choice),function(){
+            var type = 0;
+    var member=this
+            $.each(list, function () {
+    if (this == $(member).val()) {
+                    type = 1;
+                    return false
+                }
+            });
+    if (type == 0) {$(this).prependTo('#choice')}
+    })
+    }
+
+    function diff(a,b){
+    $.each(a,function(index,item){
+    alert(index+item)
+    $.each(b,function(){
+    if(item==this){
+    alert(index)
+    a.splice(index,1)
+    }
+    })
+    })
+    alert(a+'1111')
+    return a
+    }
+
+    $("#search").bind("input propertychange", function () {
+    $("#member").empty();
+    $.each(member_list, function () {
+    if (this.name.indexOf($("#search").val()) >= 0) {
+    $("#member").append($("
+<option>").text(this.name).val(this.id));
+    }
+    })
+    })
+
+    $("#choice").change(function () {$("#choice option:selected").remove()});
+    </script>
+    </
+    html >;

@@ -1,6 +1,5 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    <body onload="start()" style="background:transparent;">
 <table align="center">
     <tr>
         <td rowspan=2 style="width: 300px;">
@@ -13,58 +12,58 @@
         </td>
         <td style="width: 400px;">
             <b>全部人员：</b>
-            <select id="member" size="29" class="selectpicker show-tick form-control"></select>
+            <select id="member" size="29" multiple="multiple" class="selectpicker show-tick form-control"></select>
         </td>
     </tr>
     <tr>
         <td colspan=2 align="right">
             <button id="button_yes" type="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-ok"></span>
-                确定
+                <span class="glyphicon glyphicon-ok"></span>确定
             </button>
         </td>
     </tr>
 </table>
     </body>
 <script>
-    $("#group").click(function () {
+    start();
+
+    $("#group").change(function () {
         var group = $("#group option:selected").val();
         $.post('{% url "data" %}', {'type': "group", 'data': group}, function (member_list) {
-            window.member_list = member_list;
             $("#choice").empty();
+            window.member_list = member_list;
             $.each(member_list, function () {
                 $("#choice").append($("<option>").text(this.name).val(this.id))
-        });
-	})
-});
-
-    $("#choice").click(function () {
-        $("#choice option:selected").remove()
+            });
+        })
     });
 
-    $("#member").click(function () {
+    $("#member").change(function () {
         choice_add("#member")
     });
 
-$("#button_yes").click(function () {
-    if ($("#group option:selected").text() == '') {
-        alert('请选组')
-    }
-    else {
-        if (confirm("确定修改 " + $("#group option:selected").text())) {
-            var member_list = [];
-            $('#choice option').each(function () {
-                member_list.push($(this).val())
-            });
-            $.post('{% url "group" %}', {
-                'group': $("#group option:selected").val(),
-                'member_list': JSON.stringify(member_list)
-            }, function (response) {
-                start()
-            })
+    $("#button_yes").click(function () {
+        if ($("#group option:selected").text() == '') {
+            alert('请选组')
         }
-    }
-})
+        else {
+            list_old = [];
+            list_new = [];
+            $.each(member_list, function () {
+                list_old.push(this.name)
+            });
+            $.each($('#choice option'), function () {
+                list_new.push($(this).text())
+            });
+            del = diff(list_old, list_new);
+            {#            add=diff(list_new,list_old)#}
+            if (confirm("确定修改 " + $("#group option:selected").text())) {
+                alert('修改成功');
+                {#                var member_list = [];#}
+                {#                $('#choice option').each(function () {member_list.push($(this).val())});#}
+                {#                $.post('{% url "group" %}', {'group': $("#group option:selected").val(), 'member_list': JSON.stringify(member_list)}, function (response) {start()})#}
+            }
+        }
+    });
 
-</script>
 {% endblock %}

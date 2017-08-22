@@ -1,6 +1,5 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    <body onload="start()" style="background:transparent;">
 <table align=center>
     <tr>
         <td rowspan=2 style="width: 400px;">
@@ -63,12 +62,10 @@
 </table>
     </body>
 <script>
-    $(function () {
-        start();
-        window.add = 1
-    });
+    start();
+    window.add = 1;
 
-    $("#member").click(function () {
+    $("#member").change(function () {
         var member = $("#member option:selected").val();
         $.post('{% url "data" %}', {'type': "member", 'data': member}, function (member) {
             window.add = 0;
@@ -81,75 +78,65 @@
             $.each(group_list, function () {
                 $("#choice").append($("<option>").text(this.name).val(this.id))
             })
-	})
-});
-
-    $("#search").bind("input propertychange", function () {
-        search()
+        })
     });
 
-    $("#choice").click(function () {
-        $("#choice option:selected").remove()
-    });
-
-    $("#group").click(function () {
+    $("#group").change(function () {
         choice_add("#group")
     });
 
-$("#button_add").click(function(){
-    window.add = 1;
-    $("input").val('');
-    $("#choice").empty()
-});
+    $("#button_add").change(function () {
+        window.add = 1;
+        $("input").val('');
+        $("#choice").empty()
+    });
 
-$("#button_del").click(function () {
-    if ($("#member option:selected").text() == '') {
-        alert('请选择人员')
-    }
-    else {
-        if (confirm("确定删除 " + $("#name").val())) {
-            $.post('{% url "member" %}', {'add': '-1', 'id': $("#member option:selected").val()}, function (response) {
-                $("input").val('');
-                $("#choice").empty();
-                start()
-            })
+    $("#button_del").change(function () {
+        if ($("#member option:selected").text() == '') {
+            alert('请选择人员')
         }
-    }
-});
+        else {
+            if (confirm("确定删除 " + $("#name").val())) {
+                $.post('{% url "member" %}', {
+                    'add': '-1',
+                    'id': $("#member option:selected").val()
+                }, function (response) {
+                    start()
+                })
+            }
+        }
+    });
 
-$("#button_yes").click(function () {
-    if ($("#name").val() == '') {
-        alert('Error:请输入名字')
-    }
-    else {
-        if (confirm("确认修改 " + $("#name").val())) {
-            var group = [];
-            $('#choice option').each(function () {
-                group.push($(this).val())
-            });
-            group = JSON.stringify(group);
-            if (add == 1) {
-                id = ''
-            }
-            else {
-                id = $("#member option:selected").val()
-            }
-            data = {
-                'add': add,
-                'id': id,
-                'name': $("#name").val(),
-                'num': $("#num").val(),
-                'phone': $("#phone").val(),
-                'remark': $("#remark").val(),
-                'group': group,
-            };
-            $.post('{% url "member" %}', data, function (response) {
-                $("input").val('');
-                $("#choice").empty();
-                start()
-            })
+    $("#button_yes").change(function () {
+        if ($("#name").val() == '') {
+            alert('Error:请输入名字')
         }
-    }
-})
-</script>
+        else {
+            if (confirm("确认修改 " + $("#name").val())) {
+                var group = [];
+                $('#choice option').each(function () {
+                    group.push($(this).val())
+                });
+                group = JSON.stringify(group);
+                if (add == 1) {
+                    id = ''
+                }
+                else {
+                    id = $("#member option:selected").val()
+                }
+                data = {
+                    'add': add,
+                    'id': id,
+                    'name': $("#name").val(),
+                    'num': $("#num").val(),
+                    'phone': $("#phone").val(),
+                    'remark': $("#remark").val(),
+                    'group': group,
+                };
+                $.post('{% url "member" %}', data, function (response) {
+                    start()
+                })
+            }
+        }
+    });
 {% endblock %}
