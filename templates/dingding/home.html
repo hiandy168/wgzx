@@ -8,10 +8,7 @@
         </td>
         <td style='width: 400px;' rowspan=1>
             <b id='choice_text'>成员：</b>
-            <div class='input-group' style='width:100%'>
-                <span class='input-group-addon '><span class='glyphicon glyphicon-search'></span></span>
-                <input id='search' class='form-control' placeholder='请输入关键字'>
-            </div>
+            <input id='search' class='form-control' placeholder='请输入关键字'>
             <select id='member' size='14' class='selectpicker show-tick form-control' multiple></select>
         </td>
         <td style='width: 400px;'>
@@ -22,7 +19,7 @@
     <tr>
         <td style='width: 400px;' colspan=2>
             <b>发送内容：</b>
-            <textarea id='content' class='form-control' style='height: 150px;width: 100%'></textarea>
+            <textarea id='content' class='form-control' style='border:solid 2px;height: 150px;width: 100%'></textarea>
             <button id='button_send' type='button' style='float:right' class='btn btn-default'>
                 <span class='glyphicon glyphicon-phone'></span>发送
             </button>
@@ -43,19 +40,7 @@
     }
 
     $('#group').change(function () {
-        var group = $('#group option:selected').val();
-        data = {'type': 'group', 'data': group};
-        if (group == 'all') {
-            data.type = 'member'
-        }
-        $.post('{% url 'data' %}', data, function (member_list) {
-            window.member_list = member_list;
-            $('#member').empty();
-            $('#search').val('');
-            $.each(member_list, function () {
-                $('#member').append($('<option>').text(this.name).val(this.id))
-            })
-        })
+        group('#member')
     });
 
     $('#group').dblclick(function () {
@@ -67,20 +52,31 @@
     });
 
     $('#button_send').click(function () {
-        if ($('#content').val() == '') {
-            $.alert('请输入内容')
+        if (($('#choice option').length == 0) || ($('#content').val() == '')) {
+            $.alert('信息不全')
         }
         else {
-            if (confirm('吾日三省吾身：\n        技术支持选否？\n        全国营销选否？\n        相关领导选否？\n                确定发送？')) {
-                data = {'content': $('#content').val(), 'touser': [], 'author': '{{ user }}'};
-                $.each($('#choice option'), function () {
-                    data.touser.push({'id': $(this).val(), 'name': $(this).text()})
-                });
-                data.touser = JSON.stringify(data.touser);
-                $.post('{% url 'send' %}', data, function (response) {
-                    start()
-                })
-            }
+            $.confirm({
+                title: '发送',
+                content: '<br/>技术支持选否？<br/>全国营销选否？<br/>相关领导选否？',
+                buttons: {
+                    ok: {
+                        text: '已选',
+                        action: function () {
+                            data = {'content': $('#content').val(), 'touser': [], 'author': '{{ user }}'};
+                            $('#choice option').each(function () {
+                                data.touser.push({'id': $(this).val(), 'name': $(this).text()})
+                            });
+                            data.touser = JSON.stringify(data.touser);
+                            $.alert(data.touser);
+                            {#                            $.post('{% url 'send' %}', data, function (response) {#}
+                            {#                                start()#}
+                            {#                            })#}
+                        }
+                    },
+                    cancel: {text: '返回'}
+                }
+            })
         }
     });
 

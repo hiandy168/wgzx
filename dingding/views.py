@@ -75,14 +75,8 @@ def member(request):
             return HttpResponse('Success: %s 已修改' % name)
 
 def group(request):
-    group, member_list_new = request.POST.get('group'), eval(request.POST.get('member_list'))
-    member_list_old = [str(member.id) for member in Member.objects.filter(group=Group.objects.get(id=group))]
-    minus = [id for id in member_list_old if id not in member_list_new]
-    add = [id for id in member_list_new if id not in member_list_old]
-    print('组： ' + group)
-    print('增： ', minus)
-    print('删： ', add)
-    for id in minus:
+    group, add, delete = request.POST.get('group'), eval(request.POST.get('add')), eval(request.POST.get('del'))
+    for id in delete:
         member=Member.objects.get(id=id)
         member.group.remove(group)
         member.save()

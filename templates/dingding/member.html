@@ -75,7 +75,7 @@
             $('#remark').val(member.remark);
             window.group_list = member.group;
             $.each(group_list, function () {
-                $('#choice').append($('' < option > '').text(this.name).val(this.id))
+                $('#choice').append($('<option >').text(this.name).val(this.id))
             })
         })
     });
@@ -84,61 +84,64 @@
         choice_add('#group')
     });
 
-    $('#button_add').change(function () {
+    $('#button_add').click(function () {
         window.add = 1;
         $('input').val('');
         $('#choice').empty()
     });
 
-    $('#button_del').change(function () {
+    $('#button_del').click(function () {
         if ($('#member option:selected').text() == '') {
-            alert('请选择人员')
+            $.alert('请选择人员')
         }
         else {
-            if (confirm('确定删除 ' + $('#name').val())) {
-                $.post('{% url 'member' %}', {
-                    'add': '-1',
-                    'id': $('#member option:selected').val()
-                }, function (response) {
-                    start()
-                })
-            }
+            window.add = -1;
+            member()
         }
     });
 
-    $('#button_yes').change(function () {
+    $('#button_yes').click(function () {
         if ($('#name').val() == '') {
-            alert('Error:请输入名字')
+            $.alert('请输入名字')
         }
         else {
-            if (confirm('确认修改 ' + $('#name').val())) {
-                var group = [];
-                $('#choice option').each(function () {
-                    group.push($(this).val())
-                });
-                group = JSON.stringify(group);
-                if (add == 1) {
-                    id = ''
-                }
-                else {
-                    id = $('#member option:selected').val()
-                }
-                data = {
-                    'add': add,
-                    'id': id,
-                    'name': $('#name').val(),
-                    'num': $('#num').val(),
-                    'phone': $('#phone').val(),
-                    'remark': $('#remark').val(),
-                    'group': group,
-                };
-                $.post('{% url 'member' %}', data, function (response) {
-                    start()
-                })
-            }
+            member()
         }
     });
 
+    function member() {
+        text = ['删除', '修改', '添加'][add + 1];
+        $.confirm({
+            title: text,
+            content: $('#name').val(),
+            buttons: {
+                ok: {
+                    text: text,
+                    action: function () {
+                        var group = [];
+                        $('#choice option').each(function () {
+                            group.push($(this).val())
+                        });
+                        group = JSON.stringify(group);
+                        id = [$('#member option:selected').val(), $('#member option:selected').val(), ''][add + 1];
+                        data = {
+                            'add': add,
+                            'id': id,
+                            'name': $('#name').val(),
+                            'num': $('#num').val(),
+                            'phone': $('#phone').val(),
+                            'remark': $('#remark').val(),
+                            'group': group,
+                        };
+                        $.post('{% url 'member' %}', data, function (response) {
+                            start()
+                        })
+                    }
+                },
+                cancel: {text: '取消',}
+            },
+        })
+    }
     $('#search').bind('keypress', function (event) {
         if (event.keyCode == "13") {
             search()

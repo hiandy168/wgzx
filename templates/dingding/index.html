@@ -1,6 +1,5 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    <body>
     <nav style='margin:0 0 1px 0' class='navbar navbar-default'>
         <div class='container-fluid'>
             <ul class='nav nav-pills'>
@@ -10,12 +9,12 @@
                 </li>
                 <li><a href='/page/log' target='iframe'><span class='glyphicon glyphicon-calendar'></span><span
                         id='time'></span></a></li>
-                <li><a href='/admin/password_change/' target='iframe'><b>欢迎：</b>{{ user }}</a></li>
+                <li><a id='password'><b>欢迎：</b>{{ user }}</a></li>
                 <li><a id='logout'><span class='glyphicon glyphicon-log-out'></span></a></li>
             </ul>
         </div>
     </nav>
-    <iframe name='iframe' src='page/home' frameborder='0' allowtransparency='true' width='100%' height='580'></iframe>
+    <iframe name='iframe' src='page/home' frameborder='0' allowtransparency='true' width='100%' height='90%'></iframe>
 <script>
 $(function(){
     $('#time').text(new Date().toLocaleString());
@@ -27,5 +26,48 @@ $('#logout').click(function () {
         window.location.reload();
     })
 });
+$('#password').click(function () {
+    $.confirm({
+        title: '修改密码',
+        content: '<input id="old" type="password" class="form-control" placeholder="原密码">' +
+        '<br/><input id="new1" type="password" class="form-control" placeholder="新密码">' +
+        '<br/><input id="new2" type="password" class="form-control" placeholder="确认新密码">',
+        buttons: {
+            ok: {
+                text: '修改',
+                action: function () {
+                    var old_password = this.$content.find('#old').val();
+                    var new_password1 = this.$content.find('#new1').val();
+                    var new_password2 = this.$content.find('#new2').val();
+                    if (!old_password) {
+                        $.alert('请输入原密码');
+                        return false;
+                    }
+                    else if ((!new_password1) || (new_password1 != new_password2)) {
+                        $.alert('请核对新密码');
+                        return false;
+                    }
+                    else {
+                        $.post('/admin/password_change/', {
+                            'old_password': old_password,
+                            'new_password1': new_password1,
+                            'new_password2': new_password2
+                        }, function (response) {
+                            window.title = $('title', $("<code></code>").append($(response)));
+                        });
+                        if (title.html() == '密码更改成功') {
+                            $.alert('密码更改成功')
+                        }
+                        else {
+                            $.alert('密码更改失败');
+                            return false;
+                        }
+                    }
+                }
+            },
+            cancel: {text: '取消',}
+        }
+    })
+})
 </script>
 {% endblock %}

@@ -7,31 +7,18 @@
             src="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <link rel="stylesheet" type="text/css"
           href="http://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css">
-
-
-    <!-- 3.0 -->
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-
-    <!-- 2.3.2
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.js"></script>
-    -->
-    <script type="text/javascript">
-        $(window).on('load', function () {
-
-            $('.selectpicker').selectpicker({
-                'selectedText': 'cat'
-            });
-
-            // $('.selectpicker').selectpicker('hide');
-        });
-    </script>
 </head>
 <body>
-<select id="bs3Select" size='30' class="selectpicker show-tick form-control" multiple data-live-search="true">
+<div style="max-height: 626px; overflow: hidden; min-height: 42px;">
+    <div class="bs-searchbox">
+        <input type="text" class="form-control" autocomplete="off">
+    </div>
+    <select size="2">
     <option>cow</option>
     <option>bull</option>
 </select>
+</div>
 </body>
 </html>

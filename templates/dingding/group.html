@@ -25,16 +25,11 @@
 </table>
 <script>
     start();
+    $('#group option:first').prop('selected', 'selected');
+    group('#choice');
 
     $('#group').change(function () {
-        var group = $('#group option:selected').val();
-        $.post('{% url 'data' %}', {'type': 'group', 'data': group}, function (member_list) {
-            $('#choice').empty();
-            window.member_list = member_list;
-            $.each(member_list, function () {
-                $('#choice').append($('<option>').text(this.name).val(this.id))
-            });
-        })
+        group('#choice')
     });
 
     $('#member').change(function () {
@@ -42,54 +37,56 @@
     });
 
     $('#button_yes').click(function () {
-        if ($('#group option:selected').text() == '') {
-            $.alert('请选组')
+        name_old = [];
+        id_old = [];
+        name_new = [];
+        id_new = [];
+        $.each(member_list, function () {
+            name_old.push(this.name);
+            id_old.push(this.id)
+        });
+        $('#choice option').each(function () {
+            name_new.push($(this).text());
+            id_new.push($(this).val())
+        });
+        name_add = diff(name_new, name_old);
+        name_del = diff(name_old, name_new);
+        id_add = diff(id_new, id_old);
+        id_del = diff(id_old, id_new);
+        var title = '';
+        if (name_add.length > 0) {
+            title += '增加【' + name_add + '】'
+        }
+        if (name_del.length > 0) {
+            title += '删除【' + name_del + '】'
+        }
+        if (name_add.length + name_del.length > 0) {
+            $.confirm({
+                title: $('#group option:selected').text(),
+                content: title,
+                buttons: {
+                    ok: {
+                        text: '修改',
+                        action: function () {
+                            var member_list = [];
+                            $('#choice option').each(function () {
+                                member_list.push($(this).val())
+                            });
+                            $.post('{% url 'group' %}', {
+                                'group': $('#group option:selected').val(),
+                                'add': JSON.stringify(id_add),
+                                'del': JSON.stringify(id_del),
+                            }, function (response) {
+                                start()
+                            })
+                        }
+                    },
+                    cancel: {text: '取消',}
+                }
+            })
         }
         else {
-            list_old = [];
-            list_new = [];
-            $.each(member_list, function () {
-                list_old.push(this.name)
-            });
-            $('#choice option').each(function () {
-                list_new.push($(this).text())
-            });
-            add = diff(list_new, list_old);
-            del = diff(list_old, list_new);
-            var title = '';
-            if (add.length > 0) {
-                title += '      增加: ' + add
-            }
-            if (del.length > 0) {
-                title += '\r\n      删除: ' + del
-            }
-            if (del.length + add.length > 0) {
-                $.confirm({
-                    title: '修改 ' + $('#group option:selected').text(),
-                    content: title,
-                    buttons: {
-                        ok: {
-                            text: '确认',
-                            action: function () {
-                                var member_list = [];
-                                $('#choice option').each(function () {
-                                    member_list.push($(this).val())
-                                });
-                                $.post('{% url 'group' %}', {
-                                    'group': $('#group option:selected').val(),
-                                    'member_list': JSON.stringify(member_list)
-                                }, function (response) {
-                                    start()
-                                })
-                            }
-                        },
-                        cancel: {text: '取消',}
-                    }
-                })
-            }
-            else {
-                $.alert('未修改 ' + $('#group option:selected').text())
-            }
+            $.alert('未修改 ' + $('#group option:selected').text())
         }
     });
 
