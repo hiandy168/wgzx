@@ -1,88 +1,96 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    {#    <body onload="start()" style="background:transparent;">#}
-<table align="center">
+    <table align='center'>
     <tr>
-        <td style="width: 300px;" rowspan=2>
+        <td style='width: 300px;' rowspan=2>
         	<b>分组选择：</b>
-            <select id="group" size="30" class="selectpicker show-tick form-control"></select>
+            <select id='group' size='30' class='selectpicker show-tick form-control'></select>
         </td>
-        <td style="width: 400px;" rowspan=2>
-            <b id="choice_text">成员：</b>
-            <select id="member" size="28" multiple="multiple" class="selectpicker show-tick form-control"></select>
-            <div class="input-group"  style="width:100%">
-                <span class="input-group-addon "><span class="glyphicon glyphicon-search"></span></span>
-                <input id="search" class="form-control" placeholder="请输入关键字">
+        <td style='width: 400px;' rowspan=1>
+            <b id='choice_text'>成员：</b>
+            <div class='input-group' style='width:100%'>
+                <span class='input-group-addon '><span class='glyphicon glyphicon-search'></span></span>
+                <input id='search' class='form-control' placeholder='请输入关键字'>
             </div>
+            <select id='member' size='14' class='selectpicker show-tick form-control' multiple></select>
         </td>
-        <td style="width: 400px;">
+        <td style='width: 400px;'>
 			<b>已选：</b>
-            <select id="choice" size="20" multiple="multiple" class="selectpicker show-tick form-control"></select>
+            <select id='choice' size='17' class='selectpicker show-tick form-control' multiple></select>
         </td>
     </tr>
     <tr>
-        <td style="width: 400px;">
+        <td style='width: 400px;' colspan=2>
             <b>发送内容：</b>
-            <textarea id="content" class="form-control" style="height: 120px;width: 100%"></textarea>
-            <button id="button_send" type="button" style="float:right" class="btn btn-default">
-                <span class="glyphicon glyphicon-phone"></span>发送
+            <textarea id='content' class='form-control' style='height: 150px;width: 100%'></textarea>
+            <button id='button_send' type='button' style='float:right' class='btn btn-default'>
+                <span class='glyphicon glyphicon-phone'></span>发送
             </button>
         </td>
     </tr>
 </table>
-    </body>
 <script>
     start();
-    $("#group").prepend($("<option>").text('全部人员').val('all'));
+    $('#group').prepend($('<option selected>').text('全部人员').val('all'));
     var id = window.location.search.substr(9);
 
     if (id != '') {
-        $.post('{% url "data" %}', {'type': "history", 'data': id}, function (member_list) {
+        $.post('{% url 'data' %}', {'type': 'history', 'data': id}, function (member_list) {
             $.each(member_list, function () {
-                $("#choice").append($("<option>").text(this.name).val(this.id));
+                $('#choice').append($('<option>').text(this.name).val(this.id));
             });
         });
     }
 
-    $("#group").change(function () {
-        var group = $("#group option:selected").val();
-        data = {'type': "group", 'data': group};
+    $('#group').change(function () {
+        var group = $('#group option:selected').val();
+        data = {'type': 'group', 'data': group};
         if (group == 'all') {
             data.type = 'member'
         }
-        $.post('{% url "data" %}', data, function (member_list) {
+        $.post('{% url 'data' %}', data, function (member_list) {
             window.member_list = member_list;
-            $("#member").empty();
-            $("#search").val('');
+            $('#member').empty();
+            $('#search').val('');
             $.each(member_list, function () {
-                $("#member").append($("<option>").text(this.name).val(this.id))
+                $('#member').append($('<option>').text(this.name).val(this.id))
             })
         })
     });
 
-    $("#group").dblclick(function () {
-        choice_add("#group", 1)
+    $('#group').dblclick(function () {
+        choice_add('#group', 1)
     });
 
-    $("#member").change(function () {
-        choice_add("#member")
+    $('#member').change(function () {
+        choice_add('#member')
     });
 
-    $("#button_send").click(function () {
+    $('#button_send').click(function () {
         if ($('#content').val() == '') {
-            alert('请输入内容')
+            $.alert('请输入内容')
         }
         else {
             if (confirm('吾日三省吾身：\n        技术支持选否？\n        全国营销选否？\n        相关领导选否？\n                确定发送？')) {
                 data = {'content': $('#content').val(), 'touser': [], 'author': '{{ user }}'};
-                $.each($("#choice option"), function () {
+                $.each($('#choice option'), function () {
                     data.touser.push({'id': $(this).val(), 'name': $(this).text()})
                 });
                 data.touser = JSON.stringify(data.touser);
-                $.post('{% url "send" %}', data, function (response) {
+                $.post('{% url 'send' %}', data, function (response) {
                     start()
                 })
             }
         }
     });
+
+    $('#search').bind('keypress', function (event) {
+        if (event.keyCode == "13") {
+            search()
+        }
+    });
+    $('#choice').change(function () {
+        $('#choice option:selected').remove()
+    });
+</script>
 {% endblock %}

@@ -1,22 +1,21 @@
 {% extends 'dingding/template.html' %}
 {% block content %}
-    <body style="background:transparent;">
-    <table class="table">
+    <body style='background:transparent;'>
+    <table class='table'>
         <thead>
         <tr>
-            <th width="7%">时间</th>
+            <th width='7%'>时间</th>
             <th>操作</th>
-            <th width="20%">失败</th>
-            <th width="5%">发送人</th>
+            <th width='20%'>失败</th>
+            <th width='5%'>发送人</th>
             <th>内容</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
-    </body>
 <script>
-    $.post('{% url "log" %}', {}, function (request) {
+    $.post('{% url 'log' %}', {}, function (request) {
         $.each(request, function () {
             var td_time = $('<td>').text(this.time);
             var td_member = $('<td>').append($('<button>').text('复制收件人').attr({
@@ -32,6 +31,7 @@
     });
 
     function history(id) {
-        window.location.href = "/page/home/?history=" + id
+        window.location.href = '/page/home/?history=' + id
     }
+</script>
 {% endblock %}
