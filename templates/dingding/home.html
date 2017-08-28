@@ -9,7 +9,7 @@
         <td style='width: 400px;' rowspan=1>
             <b id='choice_text'>成员：</b>
             <input id='search' class='form-control' placeholder='请输入关键字'>
-            <select id='member' size='14' class='selectpicker show-tick form-control' multiple></select>
+            <select id='member' size='15' class='selectpicker show-tick form-control' multiple></select>
         </td>
         <td style='width: 400px;'>
 			<b>已选：</b>
@@ -19,7 +19,7 @@
     <tr>
         <td style='width: 400px;' colspan=2>
             <b>内容：</b>
-            <textarea id='content' class='form-control' style='border:solid 2px;height: 150px;width: 100%'></textarea>
+            <textarea id='content' class='form-control' style='font-size:20px; color:#F00;border:solid 1px #000;height: 150px;width: 100%'></textarea>
             <button id='button_send' type='button' style='float:right' class='btn btn-default'>
                 <span class='glyphicon glyphicon-phone'></span>发送
             </button>
@@ -61,17 +61,17 @@
                 content: '<br/>技术支持选否？<br/>全国营销选否？<br/>相关领导选否？',
                 buttons: {
                     ok: {
-                        text: '已选',
+                        text: '发送',
                         action: function () {
                             data = {'content': $('#content').val(), 'touser': [], 'author': '{{ user }}'};
                             $('#choice option').each(function () {
                                 data.touser.push({'id': $(this).val(), 'name': $(this).text()})
                             });
                             data.touser = JSON.stringify(data.touser);
-                            $.alert(data.touser);
-                            {#                            $.post('{% url 'send' %}', data, function (response) {#}
-                            {#                                start()#}
-                            {#                            })#}
+                            $.post('{% url 'send' %}', data, function (response) {
+                                start();
+                                $('#group').prepend($('<option selected>').text('全部人员').val('all'));
+                            })
                         }
                     },
                     cancel: {text: '返回'}

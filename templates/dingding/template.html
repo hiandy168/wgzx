@@ -37,6 +37,7 @@
         $.ajaxSetup({async: false});
         function start() {
             $('input').val('');
+            $('textarea').val('');
             $('#choice').empty();
             $('select').empty();
             $.post('{% url 'data' %}', {'type': 'member', 'data': 'all'}, function (member_list) {
