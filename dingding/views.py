@@ -89,7 +89,7 @@ def group(request):
 
 def log(request):
     logs = Log.objects.all()
-    lists = [{'time': log.time, 'member': {'id': log.id, 'num': len(eval(log.member))}, 'fail': log.fail,
+    lists = [{'time': log.time, 'member': log.id, 'fail': log.fail,
               'content': log.content, 'author': log.author} for log in logs[::-1]]
     return HttpResponse(json.dumps(lists), content_type='application/json')
 
@@ -106,12 +106,16 @@ def send(request):
     touser = '|'.join(set(touser))
     content = request.POST.get('content')
     author = request.POST.get('author')
-    time, fail = api(touser, content)
-    if fail == '':
-        fail = '无'
+    time, err, errcode = api(touser, content)
+    print(err)
+    if errcode==0:
+        fail = '无' if err == {} else ''
+        for i in err:
+            print(err[i],i)
+            fail+=i+'【'+','.join([Member.objects.get(num=i).name for i in err[i].split('|')])+'】'
+        log = Log.objects.create()
+        log.time, log.member, log.fail, log.content, log.author = time, member_list, fail, content, author
+        log.save()
+        return HttpResponse('Success:发送成功')
     else:
-        fail = ' | '.join([Member.objects.get(num=i).name for i in fail.split('|')])
-    log = Log.objects.create()
-    log.time, log.member, log.fail, log.content, log.author = time, member_list, fail, content, author
-    log.save()
-    return HttpResponse('Success:发送成功')
+        return HttpResponse(fail)

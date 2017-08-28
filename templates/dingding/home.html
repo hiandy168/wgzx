@@ -69,8 +69,11 @@
                             });
                             data.touser = JSON.stringify(data.touser);
                             $.post('{% url 'send' %}', data, function (response) {
-                                start();
-                                $('#group').prepend($('<option selected>').text('全部人员').val('all'));
+                                if(response=='Success:发送成功') {
+                                    start();
+                                    $('#group').prepend($('<option selected>').text('全部人员').val('all'));
+                                }
+                                $.alert(response)
                             })
                         }
                     },

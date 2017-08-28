@@ -4,7 +4,7 @@
     <table class='table'>
         <thead>
         <tr>
-            <th width='7%'>时间</th>
+            <th width='10%'>时间</th>
             <th>操作</th>
             <th width='20%'>失败</th>
             <th width='5%'>发送人</th>
@@ -18,10 +18,10 @@
     $.post('{% url 'log' %}', {}, function (request) {
         $.each(request, function () {
             var td_time = $('<td>').text(this.time);
-            var td_member = $('<td>').append($('<button>').text('复制收件人').attr({
+            var td_member = $('<td>').append($('<button>').text('重发').attr({
                 'type': 'button',
                 'class': 'btn btn-default',
-                'onclick': 'history(' + this.member.id + ')'
+                'onclick': 'history(' + this.member + ')'
             }));
             var td_fail = $('<td>').text(this.fail);
             var td_author = $('<td>').text(this.author);
