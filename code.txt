@@ -15,3 +15,30 @@ for i in Member.objects.all():
 
 makemigrations
 migrate
+createsuperuser
+
+from dingding.models import Member,Group,Log
+import pymysql
+conn = pymysql.connect(host='172.25.252.243', port=3306, user='root', passwd='zabbix@mysql@243',db='dingding',charset='utf8')
+cur = conn.cursor()
+cur.execute('SELECT * FROM team')
+for team in cur.fetchall():
+   print(team[1])
+   i=Group.objects.create()
+   i.name=team[1]
+   i.save()
+cur.execute('SELECT * FROM member')
+for member in cur.fetchall():
+    try:
+        group=Group.objects.get(name=member[4])
+        try:
+            i=Member.objects.get(name=member[1])
+        except:
+            i = Member.objects.create()
+        i.name,i.phone,i.num=member[1],member[2],member[3]
+        i.group.add(group)
+        i.save()
+    except:
+        print(member)
+cur.close()
+conn.close()

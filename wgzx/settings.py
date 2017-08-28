@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'wgzx.wsgi.application'
 DATABASES={
     'default':{
         'ENGINE':'django.db.backends.mysql',
-        'NAME':'dingdingnow',
+        'NAME':'dingdingnew',
         'USER':'root',
         'PASSWORD':'zabbix@mysql@243',
         'HOST':'172.25.252.243',

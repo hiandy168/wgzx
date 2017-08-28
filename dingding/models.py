@@ -8,7 +8,7 @@ class Group(models.Model):
         verbose_name = '分组'
         verbose_name_plural = '分组管理'
         ordering = ['name']
-    name=models.CharField('分组',max_length=100)
+    name=models.CharField('分组',max_length=20)
 
 
 class GroupAdmin(admin.ModelAdmin):

@@ -99,15 +99,16 @@ def send(request):
     for member in member_list:
         if member['id'][0] == 'g':
             for member in Member.objects.filter(group=Group.objects.get(id=member['id'][1:])):
-                if member.num != '': touser.append((member.num))
+                if member.num == '': touser.append((member.phone))
+                else:touser.append((member.num))
         else:
-            num = Member.objects.get(id=member['id']).num
-            if num != '': touser.append(num)
+            member = Member.objects.get(id=member['id'])
+            if member.num == '':touser.append((member.phone))
+            else:touser.append((member.num))
     touser = '|'.join(set(touser))
     content = request.POST.get('content')
     author = request.POST.get('author')
     time, err, errcode = api(touser, content)
-    print(err)
     if errcode==0:
         fail = '无' if err == {} else ''
         for i in err:
@@ -118,4 +119,4 @@ def send(request):
         log.save()
         return HttpResponse('Success:发送成功')
     else:
-        return HttpResponse(fail)
+        return HttpResponse(err)
