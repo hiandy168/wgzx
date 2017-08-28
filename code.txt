@@ -42,3 +42,4 @@ for member in cur.fetchall():
         print(member)
 cur.close()
 conn.close()
+
