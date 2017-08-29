@@ -34,12 +34,12 @@ for member in cur.fetchall():
         try:
             i=Member.objects.get(name=member[1])
         except:
+            print('create '+member[1])
             i = Member.objects.create()
         i.name,i.phone,i.num=member[1],member[2],member[3]
         i.group.add(group)
         i.save()
     except:
-        print(member)
+        print('fail '+member[1])
 cur.close()
 conn.close()
-

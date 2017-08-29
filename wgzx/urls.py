@@ -24,10 +24,10 @@ urlpatterns = [
     url(r'^$',dingding_views.index,name='index'),
     url(r'^page/(.+)/$',dingding_views.iframe,name='iframe'),
     url(r'^data/$', dingding_views.data, name='data'),
-    url(r'^member/$', dingding_views.member, name='member'),
-    url(r'^group/$', dingding_views.group, name='group'),
-    url(r'^log/$', dingding_views.log, name='log'),
-    url(r'^send/$', dingding_views.send, name='send'),
+    url(r'^data/member/$', dingding_views.member, name='member'),
+    url(r'^data/group/$', dingding_views.group, name='group'),
+    url(r'^data/log/$', dingding_views.log, name='log'),
+    url(r'^data/send/$', dingding_views.send, name='send'),
 ]
 
 # DEBUG = False

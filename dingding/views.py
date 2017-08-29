@@ -44,11 +44,14 @@ def data(request):
     if isinstance(lists, list):
         lists = sorted(lists, key=lambda x: x['name'])
     return HttpResponse(json.dumps(lists), content_type='application/json')
+
+
 def replace(input):
     if input==None:
         input=''
     return input
 
+@login_required
 def member(request):
     add = request.POST.get('add')
     if add == '-1':
@@ -74,6 +77,7 @@ def member(request):
             member.save()
             return HttpResponse('Success: %s 已修改' % name)
 
+@login_required
 def group(request):
     group, add, delete = request.POST.get('group'), eval(request.POST.get('add')), eval(request.POST.get('del'))
     for id in delete:
@@ -86,13 +90,14 @@ def group(request):
         member.save()
     return HttpResponse('Success: %s 组已修改' % Group.objects.get(id=group).name)
 
-
+@login_required
 def log(request):
     logs = Log.objects.all()
     lists = [{'time': log.time, 'member': log.id, 'fail': log.fail,
               'content': log.content, 'author': log.author} for log in logs[::-1]]
     return HttpResponse(json.dumps(lists), content_type='application/json')
 
+@login_required
 def send(request):
     touser = []
     member_list = json.loads(request.POST.get('touser'))

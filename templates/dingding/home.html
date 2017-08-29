@@ -29,10 +29,9 @@
 <script>
     start();
     $('#group').prepend($('<option selected>').text('全部人员').val('all'));
-    var id = window.location.search.substr(9);
-
-    if (id != '') {
-        $.post('{% url 'data' %}', {'type': 'history', 'data': id}, function (member_list) {
+    var m = window.location.search.match('history=([^&]+)');
+    if(m) {
+        $.post('{% url 'data' %}', {'type': 'history', 'data': m[1]}, function (member_list) {
             $.each(member_list, function () {
                 $('#choice').append($('<option>').text(this.name).val(this.id));
             });
