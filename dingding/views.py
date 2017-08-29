@@ -116,9 +116,15 @@ def send(request):
     time, err, errcode = api(touser, content)
     if errcode==0:
         fail = '无' if err == {} else ''
-        for i in err:
-            print(err[i],i)
-            fail+=i+'【'+','.join([Member.objects.get(num=i).name for i in err[i].split('|')])+'】'
+        for info in err:
+            list1,list2=err[info].split('|'),[]
+            for num in list1:
+                try:
+                    name=Member.objects.filter(num=num)[0].name
+                except:
+                    name=Member.objects.filter(phone=num)[0].name
+                list2.append(name)
+            fail+=info+'【'+','.join(list2)+'】'
         log = Log.objects.create()
         log.time, log.member, log.fail, log.content, log.author = time, member_list, fail, content, author
         log.save()

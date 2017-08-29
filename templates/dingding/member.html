@@ -134,6 +134,7 @@
                             'group': group,
                         };
                         $.post('{% url 'member' %}', data, function (response) {
+                            $.alert(response)
                             start()
                         })
                     }
