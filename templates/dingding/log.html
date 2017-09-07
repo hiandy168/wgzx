@@ -1,4 +1,4 @@
-{% extends 'dingding/template.html' %}
+﻿{% extends 'dingding/template.html' %}
 {% block content %}
     <body style='background:transparent;'>
     <table class='table'>
@@ -6,8 +6,8 @@
         <tr>
             <th width='10%'>时间</th>
             <th width='5%'>发送人</th>
-            <th width='20%'>失败</th>
-            <th width='60%'>内容</th>
+            <th width='40%'>状态</th>
+            <th width='40%'>内容</th>
             <th width='5%'>操作</th>
         </tr>
         </thead>
@@ -18,7 +18,8 @@
     $.post('{% url 'log' %}', {}, function (request) {
         $.each(request, function () {
             var td_time = $('<td>').text(this.time);
-            var td_member = $('<td>').append($('<button>').text('重发').attr({
+            var td_operation
+ = $('<td>').append($('<button>').text('重发').attr({
                 'type': 'button',
                 'class': 'btn btn-default',
                 'onclick': 'history(' + this.member + ')'
@@ -26,7 +27,7 @@
             var td_fail = $('<td>').text(this.fail);
             var td_author = $('<td>').text(this.author);
             var td_content = $('<td>').text(this.content);
-            $('tbody').append($('<tr>').append(td_time).append(td_author).append(td_fail).append(td_content).append(td_send))
+            $('tbody').append($('<tr>').append(td_time).append(td_author).append(td_fail).append(td_content).append(td_operation))
         });
     });
 
