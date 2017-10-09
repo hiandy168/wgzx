@@ -2,7 +2,7 @@
 
 前端采用bootstrap、juery。<br>
 后端使用python。<br>
-数据库为MYSQL(公司内网无法连接，因而github里使用SQLlit)。<br>
+数据库为MYSQL(公司内网无法连接，因而github里使用SQLite)。<br>
 （特别注意，本程序运行的Django版本为1.8及以下，更高版本会报错）
 <br>
 ## 网页端
