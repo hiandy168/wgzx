@@ -78,15 +78,10 @@ WSGI_APPLICATION = 'wgzx.wsgi.application'
 
 DATABASES={
     'default':{
-        'ENGINE':'django.db.backends.mysql',
-        'NAME':'dingdingnew',
-        'USER':'root',
-        'PASSWORD':'zabbix@mysql@243',
-        'HOST':'172.25.252.243',
-        'PORT':'3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'dingding.db'),
     }
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
